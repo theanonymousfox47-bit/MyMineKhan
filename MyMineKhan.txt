@@ -1,89 +1,108 @@
-<div id="login-prompt" style="
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: #222; 
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-">
-    <h1 style="color: #6c5ce7;">MineKhan Access Required</h1>
-    <p>Please enter the secret passcode to play the game:</p>
-    <input type="password" id="password-input" style="
-        padding: 10px; 
-        margin: 10px; 
-        font-size: 16px; 
-        border: 2px solid #6c5ce7;
-        background-color: #333;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MineKhan - Locked Edition</title>
+</head>
+<body style="margin: 0; background: #000; overflow: hidden;">
+    <!-- Login Overlay -->
+    <div id="login-prompt" style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #222;
         color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
     ">
-    <button onclick="checkPassword()" style="
-        padding: 10px 20px; 
-        font-size: 18px; 
-        background-color: #6c5ce7; 
-        color: white; 
-        border: none; 
-        cursor: pointer;
-    ">
-        Enter Game
-    </button>
-</div>
-<div id="game-container" style="display: none;"> 
-    ```
+        <h1 style="color: #6c5ce7;">MineKhan Access Required</h1>
+        <p>Please enter the secret passcode to play the game:</p>
+        <input type="password" id="password-input" autofocus style="
+            padding: 10px;
+            margin: 10px;
+            font-size: 16px;
+            border: 2px solid #6c5ce7;
+            background-color: #333;
+            color: white;
+        ">
+        <button onclick="checkPassword()" style="
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            cursor: pointer;
+        ">
+            Enter Game
+        </button>
+    </div>
 
-#### C. Wrap the Existing Game Content:
+    <!-- Game Container (Hidden Initially) -->
+    <div id="game-container" style="display: none;">
+        <!-- REPLACE THIS WITH YOUR ACTUAL GAME CONTENT HERE -->
+        <!-- Example placeholder: A simple canvas "game" -->
+        <canvas id="game-canvas" width="800" height="600" style="border: 1px solid #fff; background: #87CEEB;">
+            Your MineKhan game goes here! (e.g., <script> for block-breaking logic)
+        </canvas>
+        <p style="color: white; text-align: center;">Placeholder game loaded. Controls: WASD to move, etc.</p>
+        <!-- END OF PLACEHOLDER - Paste your real <script> and elements here -->
+    </div>
 
-1.  **Find the Game Content Start:** Everything between the `<body>` and `</body>` tags, except for the new login prompt you just added, is your game content. Your game's code, including the main `<script>` blocks, must be placed *inside* the `<div id="game-container">`.
-2.  **Find the Game Content End:** Scroll to the very bottom of your file, right before the closing `</body>` tag.
-3.  **Add the Closing Tag:** Just before the final `</body>` tag, add the closing `</div>` to close the game container.
+    <script>
+        function checkPassword() {
+            // Define the secret password (change this!)
+            const correctPassword = "!)!(!*!&!^!%!$!#!@!";  // Was: "!)!(!*!&!^!%!$!#!@!"
 
-    ```html
-    </div> 
-</body>
-</html>
-    ```
+            // Get and trim user input
+            const enteredPassword = document.getElementById('password-input').value.trim();
 
-### Step 3: Add the JavaScript Logic
+            if (enteredPassword === correctPassword) {
+                // Success: Hide prompt, show game
+                document.getElementById('login-prompt').style.display = 'none';
+                document.getElementById('game-container').style.display = 'block';
 
-You need to add a small `<script>` block that holds the password checking logic.
+                // Focus canvas if it exists
+                const canvas = document.querySelector('canvas');
+                if (canvas) {
+                    canvas.focus();
+                }
+            } else {
+                // Fail: Shake input and clear
+                const input = document.getElementById('password-input');
+                input.value = '';
+                input.classList.add('shake');  // Add shake class
+                setTimeout(() => input.classList.remove('shake'), 500);  // Remove after 0.5s
 
-1.  **Place the Script:** Find the location where you added the new closing `</div>` tag in **Step 2C**.
-2.  **Paste the following code** *before* the final `</body>` tag, but after the `</div>`.
+                alert('Access Denied. Please try again.');
+            }
+        }
 
-**Be sure to change the placeholder password `Your_Secret_Passcode_Here` to your actual password (e.g., `mine2024`).**
+        // Enter key support
+        document.getElementById('password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
 
-```html
-<script>
-  function checkPassword() {
-    // 1. Define the secret password here!
-    const correctPassword = "!)!(!*!&!^!%!$!#!@!"; 
-
-    // 2. Get the value the user typed in
-    const enteredPassword = document.getElementById('password-input').value;
-
-    // 3. Check if the passwords match
-    if (enteredPassword === correctPassword) {
-      // Correct password: Hide the login prompt and show the game
-      document.getElementById('login-prompt').style.display = 'none';
-      document.getElementById('game-container').style.display = 'block';
-      
-      // Optional: Give the game canvas focus to start playing immediately
-      const canvas = document.querySelector('canvas');
-      if (canvas) {
-        canvas.focus();
-      }
-      
-    } else {
-      // Incorrect password: Alert the user
-      alert('Access Denied. Please try again.');
-      document.getElementById('password-input').value = ''; // Clear the input field
-    }
-  }
-</script>
+        // Simple CSS for shake effect (inline for self-contained)
+        const style = document.createElement('style');
+        style.textContent = `
+            .shake {
+                animation: shake 0.5s ease-in-out;
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
 </html>
